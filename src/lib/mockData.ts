@@ -15,6 +15,7 @@ export const mockProjects: Project[] = [
     title: 'Cherche-vie',
     thumbnail_url: 'https://images.pexels.com/photos/7862464/pexels-photo-7862464.jpeg?auto=compress&cs=tinysrgb&w=800',
     preview_video_url: null,
+    brief_description: 'Explorez un monde mystique en FPS, photographiez et déchiffrez une encyclopédie pour dévoiler ses secrets.',
     description: [
       {
         id: '1',
@@ -32,6 +33,7 @@ export const mockProjects: Project[] = [
     title: 'Dispin',
     thumbnail_url: 'https://images.pexels.com/photos/3761504/pexels-photo-3761504.jpeg?auto=compress&cs=tinysrgb&w=800',
     preview_video_url: null,
+    brief_description: 'A unique puzzle game featuring rotating mechanics and mind-bending challenges.',
     description: [
       {
         id: '1',

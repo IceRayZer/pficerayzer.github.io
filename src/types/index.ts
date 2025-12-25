@@ -17,6 +17,7 @@ export interface Project {
   title: string;
   thumbnail_url: string;
   preview_video_url: string | null;
+  brief_description?: string | null;
   description: ContentBlock[];
   software_icons: string[];
   tags?: Tag[];
@@ -25,4 +26,17 @@ export interface Project {
   updated_at?: string;
 }
 
+export interface ProjectWithTags extends Project {
+  tags: Tag[];
+}
+
 export type Language = 'en' | 'fr';
+
+export interface Translations {
+  en: {
+    [key: string]: string;
+  };
+  fr: {
+    [key: string]: string;
+  };
+}
