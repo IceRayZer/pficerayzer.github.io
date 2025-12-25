@@ -92,10 +92,27 @@ Le projet est configuré pour un déploiement automatique sur GitHub Pages.
    - Le workflow GitHub Actions se déclenchera automatiquement
    - Le site sera disponible à `https://pficerayzer.github.io`
 
-**Important** : Si vous voyez des erreurs 404 pointant vers `icerayzer.github.io`, c'est probablement dû à :
-- Un cache du navigateur : videz le cache ou utilisez le mode navigation privée
-- Un build obsolète : le dossier `dist/` sera régénéré automatiquement par GitHub Actions
-- Assurez-vous que GitHub Pages est configuré pour utiliser "GitHub Actions" comme source, pas la branche `main` directement
+**Important** : Si vous voyez des erreurs 404 pointant vers `icerayzer.github.io`, suivez ces étapes :
+
+1. **Vérifier la configuration GitHub Pages** :
+   - Allez dans Settings → Pages de votre repository
+   - Source : **doit être "GitHub Actions"** (pas la branche `main` directement)
+   - Si c'est configuré sur une branche, changez pour "GitHub Actions"
+
+2. **Forcer un nouveau build** :
+   - Allez dans l'onglet Actions de votre repository
+   - Cliquez sur "Deploy to GitHub Pages" dans la liste des workflows
+   - Cliquez sur "Run workflow" → "Run workflow" pour forcer un nouveau build
+   - Attendez que le workflow se termine (2-3 minutes)
+
+3. **Vider le cache du navigateur** :
+   - Ouvrez `https://pficerayzer.github.io` en navigation privée (Ctrl+Shift+N)
+   - Ou videz le cache : Ctrl+Shift+Delete → Cochez "Images et fichiers en cache" → Effacer
+
+4. **Vérifier que le nouveau build est déployé** :
+   - Allez dans Settings → Pages
+   - Vérifiez la date du dernier déploiement
+   - Si c'est ancien, le workflow n'a peut-être pas été déclenché
 
 ### Déploiement automatique
 
