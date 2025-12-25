@@ -92,6 +92,11 @@ Le projet est configuré pour un déploiement automatique sur GitHub Pages.
    - Le workflow GitHub Actions se déclenchera automatiquement
    - Le site sera disponible à `https://pficerayzer.github.io`
 
+**Important** : Si vous voyez des erreurs 404 pointant vers `icerayzer.github.io`, c'est probablement dû à :
+- Un cache du navigateur : videz le cache ou utilisez le mode navigation privée
+- Un build obsolète : le dossier `dist/` sera régénéré automatiquement par GitHub Actions
+- Assurez-vous que GitHub Pages est configuré pour utiliser "GitHub Actions" comme source, pas la branche `main` directement
+
 ### Déploiement automatique
 
 À chaque push sur la branche `main`, le workflow :
