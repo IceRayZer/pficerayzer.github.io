@@ -72,21 +72,45 @@ npm run build
 npm run preview
 ```
 
-## Deployment
+## Deployment sur GitHub Pages
 
-### Netlify
-The project includes `netlify.toml` for easy deployment:
-1. Push to GitHub
-2. Connect your repository to Netlify
-3. Environment variables are automatically configured
-4. Deploy!
+Le projet est configuré pour un déploiement automatique sur GitHub Pages.
 
-### Vercel
-The project includes `vercel.json` for easy deployment:
-1. Push to GitHub
-2. Import your repository in Vercel
-3. Environment variables are automatically configured
-4. Deploy!
+### Configuration initiale
+
+1. **Activer GitHub Pages dans votre repository** :
+   - Allez dans Settings → Pages de votre repository `pficerayzer.github.io`
+   - Source : sélectionnez "GitHub Actions"
+
+2. **Configurer les secrets GitHub** (si vous utilisez Supabase) :
+   - Allez dans Settings → Secrets and variables → Actions
+   - Ajoutez les secrets suivants :
+     - `VITE_SUPABASE_URL` : Votre URL Supabase
+     - `VITE_SUPABASE_ANON_KEY` : Votre clé anonyme Supabase
+
+3. **Push vers la branche `main`** :
+   - Le workflow GitHub Actions se déclenchera automatiquement
+   - Le site sera disponible à `https://pficerayzer.github.io`
+
+### Déploiement automatique
+
+À chaque push sur la branche `main`, le workflow :
+- Installe les dépendances
+- Build le projet
+- Déploie automatiquement sur GitHub Pages
+
+### Édition et sauvegarde
+
+1. **Éditer via l'interface admin** :
+   - Connectez-vous au dashboard admin (`/admin`)
+   - Modifiez vos projets, tags, images, vidéos, styles
+   - Cliquez sur "Save" pour sauvegarder dans Supabase
+
+2. **Push les modifications du code** :
+   - Utilisez GitHub Desktop pour commit et push vos changements
+   - Le déploiement se fera automatiquement via GitHub Actions
+
+**Note** : Les modifications de contenu (projets, tags) sont sauvegardées directement dans Supabase et apparaissent immédiatement sur le site. Les modifications de code nécessitent un commit et push pour être déployées.
 
 ## Admin Access
 
