@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent, type SyntheticEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Save, X } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -54,17 +54,17 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
   };
 
   const toggleSoftware = (software: string) => {
-    setSoftwareIcons((prev) =>
+    setSoftwareIcons((prev: string[]) =>
       prev.includes(software)
-        ? prev.filter((s) => s !== software)
+        ? prev.filter((s: string) => s !== software)
         : [...prev, software]
     );
   };
 
   const toggleTag = (tagId: string) => {
-    setSelectedTags((prev) =>
+    setSelectedTags((prev: string[]) =>
       prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
+        ? prev.filter((id: string) => id !== tagId)
         : [...prev, tagId]
     );
   };
@@ -127,7 +127,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
           .eq('project_id', projectId);
 
         if (selectedTags.length > 0) {
-          const projectTags = selectedTags.map((tagId) => ({
+          const projectTags = selectedTags.map((tagId: string) => ({
             project_id: projectId,
             tag_id: tagId
           }));
@@ -179,7 +179,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
               className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-600"
               placeholder="Project title..."
             />
@@ -192,7 +192,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
             <input
               type="url"
               value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setThumbnailUrl(e.target.value)}
               className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-600"
               placeholder="https://..."
             />
@@ -201,7 +201,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                 src={thumbnailUrl}
                 alt="Thumbnail preview"
                 className="mt-2 w-full h-40 object-cover rounded-md"
-                onError={(e) => {
+                onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
@@ -215,7 +215,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
             <input
               type="url"
               value={previewVideoUrl}
-              onChange={(e) => setPreviewVideoUrl(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setPreviewVideoUrl(e.target.value)}
               className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-red-600"
               placeholder="https://..."
             />
@@ -249,7 +249,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
               Tags
             </label>
             <div className="flex flex-wrap gap-2">
-              {availableTags.map((tag) => (
+              {availableTags.map((tag: Tag) => (
                 <motion.button
                   key={tag.id}
                   whileHover={{ scale: 1.05 }}

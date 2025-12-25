@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Volume2, VolumeX } from 'lucide-react';
+import { X, Volume2, VolumeX } from 'lucide-react';
 import { Project } from '../types';
 import { useState } from 'react';
+import type { MouseEvent } from 'react';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -28,7 +29,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: MouseEvent) => e.stopPropagation()}
           className="relative w-full max-w-4xl bg-zinc-900 rounded-lg overflow-hidden my-8"
         >
           <motion.button

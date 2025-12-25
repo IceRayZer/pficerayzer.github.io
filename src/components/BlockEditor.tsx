@@ -1,5 +1,6 @@
 import { motion, Reorder } from 'framer-motion';
 import { GripVertical, Trash2, Type, Image as ImageIcon, Video } from 'lucide-react';
+import type { ChangeEvent, SyntheticEvent } from 'react';
 import { ContentBlock } from '../types';
 
 interface BlockEditorProps {
@@ -103,7 +104,7 @@ export function BlockEditor({ blocks, onChange }: BlockEditorProps) {
               {block.type === 'text' ? (
                 <textarea
                   value={block.content}
-                  onChange={(e) => updateBlock(block.id, e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => updateBlock(block.id, e.target.value)}
                   placeholder="Enter your text content..."
                   rows={4}
                   className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
@@ -112,7 +113,7 @@ export function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                 <input
                   type="url"
                   value={block.content}
-                  onChange={(e) => updateBlock(block.id, e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => updateBlock(block.id, e.target.value)}
                   placeholder={`Enter ${block.type} URL...`}
                   className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600"
                 />
@@ -123,7 +124,7 @@ export function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   src={block.content}
                   alt="Preview"
                   className="w-full h-40 object-cover rounded-md"
-                  onError={(e) => {
+                  onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />

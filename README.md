@@ -158,8 +158,7 @@ src/
 │   └── useWishlist.ts       # Wishlist functionality
 ├── lib/                 # Utilities and configuration
 │   ├── mockData.ts          # Fallback data
-│   ├── supabase.ts          # Supabase client
-│   └── translations.ts      # i18n strings
+│   └── supabase.ts          # Supabase client
 ├── pages/               # Main views
 │   ├── AdminDashboard.tsx   # Admin panel
 │   ├── AdminLogin.tsx       # Login page

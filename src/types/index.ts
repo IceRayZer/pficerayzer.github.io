@@ -25,17 +25,4 @@ export interface Project {
   updated_at?: string;
 }
 
-export interface ProjectWithTags extends Project {
-  tags: Tag[];
-}
-
 export type Language = 'en' | 'fr';
-
-export interface Translations {
-  en: {
-    [key: string]: string;
-  };
-  fr: {
-    [key: string]: string;
-  };
-}
