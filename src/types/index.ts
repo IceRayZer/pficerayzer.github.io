@@ -5,9 +5,11 @@ export interface Tag {
   created_at?: string;
 }
 
+export type BlockType = 'text' | 'image' | 'video' | 'audio'; // <--- Ajout de 'audio'
+
 export interface ContentBlock {
   id: string;
-  type: 'text' | 'image' | 'video';
+  type: BlockType;
   content: string;
   order: number;
 }

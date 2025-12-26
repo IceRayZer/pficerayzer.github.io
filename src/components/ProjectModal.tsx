@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Volume2, VolumeX, Calendar, Tag } from 'lucide-react';
+import { X, Volume2, VolumeX, Calendar, Music } from 'lucide-react';
 import { Project } from '../types';
 import { useState } from 'react';
 
@@ -100,7 +100,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                     ))}
                   </div>
 
-                  {/* Date (si dispo) */}
+                  {/* Date */}
                   {project.created_at && (
                     <div className="flex items-center gap-2 text-sm border-l border-zinc-700 pl-4">
                       <Calendar size={14} />
@@ -159,6 +159,23 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                             controls
                             className="w-full"
                           />
+                        </div>
+                      );
+                    }
+                    if (block.type === 'audio') {
+                      return (
+                        <div key={block.id} className="my-8 bg-zinc-900 rounded-xl p-4 flex items-center gap-4 border border-zinc-800 shadow-lg">
+                           <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-900 rounded-md flex items-center justify-center shadow-inner shrink-0">
+                                <Music className="text-white w-8 h-8" />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                                <div className="text-sm text-zinc-400 mb-1 font-medium tracking-wide uppercase">Piste Audio</div>
+                                <audio 
+                                    controls 
+                                    src={block.content} 
+                                    className="w-full h-8 block custom-audio-player"
+                                />
+                           </div>
                         </div>
                       );
                     }
