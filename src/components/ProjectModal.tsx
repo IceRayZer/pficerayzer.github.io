@@ -30,7 +30,6 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          // Changement ici : max-w-6xl pour le format "Article" large
           className="relative w-full max-w-6xl max-h-[90vh] bg-zinc-950 rounded-xl overflow-hidden shadow-2xl flex flex-col"
         >
           {/* Bouton Fermer */}
@@ -128,15 +127,13 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
               )}
 
               {/* 3. Corps de l'article (Affichage des Blocs) */}
-              <div className="space-y-8 max-w-4xl">
-                {/* C'est ICI que la magie opère pour le texte */}
+              <div className="space-y-8 w-full">
                 {Array.isArray(project.description) ? (
                   project.description.map((block: any) => {
                     if (block.type === 'text') {
                       return (
                         <div 
                           key={block.id} 
-                          // C'est ICI que j'ai mis le correctif 'break-words'
                           className="prose prose-invert prose-lg max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap break-words w-full"
                         >
                           {block.content}
@@ -168,8 +165,8 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                     return null;
                   })
                 ) : (
-                  // Fallback (J'ai aussi ajouté break-words ici pour être sûr)
-                  <p className="text-zinc-300 whitespace-pre-wrap break-words text-lg">
+                  // Fallback
+                  <p className="text-zinc-300 whitespace-pre-wrap break-words w-full text-lg">
                     {project.description}
                   </p>
                 )}
