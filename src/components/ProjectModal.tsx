@@ -129,12 +129,16 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
 
               {/* 3. Corps de l'article (Affichage des Blocs) */}
               <div className="space-y-8 max-w-4xl">
-                {/* C'est ICI qu'on restaure ta logique de blocs */}
+                {/* C'est ICI que la magie opère pour le texte */}
                 {Array.isArray(project.description) ? (
                   project.description.map((block: any) => {
                     if (block.type === 'text') {
                       return (
-                        <div key={block.id} className="prose prose-invert prose-lg max-w-none text-zinc-300 leading-relaxed whitespace-pre-line">
+                        <div 
+                          key={block.id} 
+                          // C'est ICI que j'ai mis le correctif 'break-words'
+                          className="prose prose-invert prose-lg max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap break-words w-full"
+                        >
                           {block.content}
                         </div>
                       );
@@ -164,8 +168,8 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                     return null;
                   })
                 ) : (
-                  // Fallback au cas où description serait une string simple (sécurité)
-                  <p className="text-zinc-300 whitespace-pre-line text-lg">
+                  // Fallback (J'ai aussi ajouté break-words ici pour être sûr)
+                  <p className="text-zinc-300 whitespace-pre-wrap break-words text-lg">
                     {project.description}
                   </p>
                 )}
