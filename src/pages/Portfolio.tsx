@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { ProjectCard } from '../components/ProjectCard';
 import { ProjectModal } from '../components/ProjectModal';
@@ -8,12 +9,14 @@ import { useProjects } from '../hooks/useProjects';
 import { useWishlist } from '../hooks/useWishlist';
 import { Project, Language } from '../types';
 
+import { SEO } from '../components/SEO';
+
 interface PortfolioProps {
-  onAdminClick: () => void;
   isAdmin: boolean;
 }
 
-export function Portfolio({ onAdminClick, isAdmin }: PortfolioProps) {
+export function Portfolio({ isAdmin }: PortfolioProps) {
+  const navigate = useNavigate();
   const { projects, loading } = useProjects();
   const { wishlistCount, toggleWishlist, isInWishlist } = useWishlist();
   const [language, setLanguage] = useState<Language>('en');
@@ -61,6 +64,14 @@ export function Portfolio({ onAdminClick, isAdmin }: PortfolioProps) {
     setShowWishlistOnly(!showWishlistOnly);
   };
 
+  const handleAdminClick = () => {
+    if (isAdmin) {
+      navigate('/admin');
+    } else {
+      navigate('/login');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
@@ -81,7 +92,7 @@ export function Portfolio({ onAdminClick, isAdmin }: PortfolioProps) {
         onLanguageChange={handleLanguageChange}
         onShuffle={handleShuffle}
         onWishlistClick={handleWishlistClick}
-        onAdminClick={onAdminClick}
+        onAdminClick={handleAdminClick}
         isAdmin={isAdmin}
       />
 
@@ -129,7 +140,6 @@ export function Portfolio({ onAdminClick, isAdmin }: PortfolioProps) {
                 project={project}
                 isInWishlist={isInWishlist(project.id)}
                 onToggleWishlist={toggleWishlist}
-                onPlay={setSelectedProject}
                 language={language}
               />
             ))}

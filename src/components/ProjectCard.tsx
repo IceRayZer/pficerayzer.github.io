@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Play, Plus, Check } from 'lucide-react';
 import { Project } from '../types';
 
@@ -7,7 +8,6 @@ interface ProjectCardProps {
   project: Project;
   isInWishlist: boolean;
   onToggleWishlist: (projectId: string) => void;
-  onPlay: (project: Project) => void;
   language: 'en' | 'fr';
 }
 
@@ -15,10 +15,18 @@ export function ProjectCard({
   project,
   isInWishlist,
   onToggleWishlist,
-  onPlay,
   language
 }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleClick = () => {
+    // Navigate to project route with background location for modal behavior
+    navigate(`/project/${project.id}`, {
+      state: { backgroundLocation: location }
+    });
+  };
 
   return (
     <motion.div
@@ -30,7 +38,7 @@ export function ProjectCard({
       transition={{ duration: 0.4 }}
       layoutId={`project-card-${project.id}`}
       // C'est ICI que la magie opère : toute la carte déclenche l'ouverture
-      onClick={() => onPlay(project)}
+      onClick={handleClick}
       style={{ zIndex: isHovered ? 50 : 1 }}
     >
       <motion.div
@@ -39,8 +47,8 @@ export function ProjectCard({
           scale: isHovered ? 1.05 : 1, // Légèrement moins zoomé pour rester élégant
           boxShadow: isHovered ? "0 20px 25px -5px rgb(0 0 0 / 0.5)" : "0 0 0 0 rgb(0 0 0 / 0)"
         }}
-        transition={{ 
-          duration: 0.3, 
+        transition={{
+          duration: 0.3,
           ease: [0.25, 0.46, 0.45, 0.94]
         }}
       >
@@ -126,7 +134,7 @@ export function ProjectCard({
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent) => {
                       e.stopPropagation(); // Empêche d'ouvrir le modal quand on ajoute aux favoris
                       onToggleWishlist(project.id);
                     }}

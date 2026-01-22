@@ -12,6 +12,7 @@ export interface ContentBlock {
   type: BlockType;
   content: string;
   order: number;
+  alt?: string; // Texte alternatif pour SEO (images/vidéos)
 }
 
 export interface Project {
@@ -26,6 +27,8 @@ export interface Project {
   order_index: number;
   created_at?: string;
   updated_at?: string;
+  seo_title?: string; // Titre personnalisé pour SEO
+  seo_description?: string; // Description personnalisée pour SEO
 }
 
 export interface ProjectWithTags extends Project {

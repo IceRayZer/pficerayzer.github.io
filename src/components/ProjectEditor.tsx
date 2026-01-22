@@ -5,6 +5,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { mockTags } from '../lib/mockData';
 import { Project, Tag, ContentBlock } from '../types';
 import { MediaLibraryModal } from './MediaLibraryModal';
+import { SOFTWARE_OPTIONS } from '../lib/softwareIcons';
 
 interface ProjectEditorProps {
   project?: Project;
@@ -12,7 +13,7 @@ interface ProjectEditorProps {
   onCancel: () => void;
 }
 
-const SOFTWARE_OPTIONS = ['Unity', 'Figma', 'Blender', 'Unreal Engine', 'Photoshop', 'Illustrator', 'After Effects', 'Premiere Pro'];
+
 
 export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps) {
   // --- États du Projet ---
@@ -22,7 +23,9 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
   const [softwareIcons, setSoftwareIcons] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
-  
+  const [seoTitle, setSeoTitle] = useState('');
+  const [seoDescription, setSeoDescription] = useState('');
+
   // --- États UI/Système ---
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [saving, setSaving] = useState(false);
@@ -40,6 +43,8 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
       setSoftwareIcons(project.software_icons || []);
       setSelectedTags(project.tags?.map((t) => t.id) || []);
       setBlocks(project.description || []);
+      setSeoTitle(project.seo_title || '');
+      setSeoDescription(project.seo_description || '');
     }
   }, [project]);
 
@@ -134,8 +139,10 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
         thumbnail_url: thumbnailUrl.trim(),
         preview_video_url: previewVideoUrl.trim() || null,
         software_icons: softwareIcons,
-        description: blocks, // On sauvegarde les blocs JSON
-        order_index: project?.order_index || 0
+        description: blocks, // On sauvegarde les blocs JSON avec alt-text
+        order_index: project?.order_index || 0,
+        seo_title: seoTitle.trim() || null,
+        seo_description: seoDescription.trim() || null
       };
 
       let projectId = project?.id;
@@ -189,7 +196,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8 pb-20">
-        
+
         {/* Header Fixe */}
         <div className="flex items-center justify-between sticky top-0 bg-black/90 backdrop-blur-md z-40 py-4 border-b border-zinc-800 -mx-4 px-4 md:-mx-8 md:px-8">
           <div className="flex items-center gap-4">
@@ -245,8 +252,8 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                   className="flex-1 bg-zinc-950 border border-zinc-700 rounded-md p-3 text-white focus:outline-none focus:border-white text-sm"
                   placeholder="https://..."
                 />
-                <button 
-                  onClick={() => openMediaLibraryGlobal()} 
+                <button
+                  onClick={() => openMediaLibraryGlobal()}
                   className="p-3 bg-zinc-800 rounded-md hover:bg-zinc-700"
                   title="Choisir une image"
                 >
@@ -254,7 +261,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                 </button>
               </div>
               {thumbnailUrl && (
-                 <img src={thumbnailUrl} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-md border border-zinc-800" />
+                <img src={thumbnailUrl} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-md border border-zinc-800" />
               )}
             </div>
             <div>
@@ -277,11 +284,10 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                 <button
                   key={software}
                   onClick={() => toggleSoftware(software)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                    softwareIcons.includes(software)
-                      ? 'bg-red-600 text-white'
-                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${softwareIcons.includes(software)
+                    ? 'bg-red-600 text-white'
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                    }`}
                 >
                   {software}
                 </button>
@@ -297,9 +303,8 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                 <button
                   key={tag.id}
                   onClick={() => toggleTag(tag.id)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                    selectedTags.includes(tag.id) ? 'opacity-100 ring-2 ring-white' : 'opacity-40 grayscale'
-                  }`}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${selectedTags.includes(tag.id) ? 'opacity-100 ring-2 ring-white' : 'opacity-40 grayscale'
+                    }`}
                   style={{ backgroundColor: tag.hex_color }}
                 >
                   {tag.label}
@@ -312,7 +317,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
         {/* Éditeur de Blocs (Contenu) */}
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-zinc-300">Contenu détaillé</h2>
-          
+
           <Reorder.Group axis="y" values={blocks} onReorder={setBlocks} className="space-y-4">
             {blocks.map((block) => (
               <Reorder.Item key={block.id} value={block} className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden relative group">
@@ -320,19 +325,19 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                   <div className="mt-2 cursor-grab active:cursor-grabbing text-zinc-600 hover:text-white">
                     <GripVertical size={20} />
                   </div>
-                  
+
                   <div className="flex-1 space-y-2">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs uppercase font-bold text-zinc-500 tracking-wider flex items-center gap-2">
-                            {block.type === 'text' && <Type size={14}/>}
-                            {block.type === 'image' && <ImageIcon size={14}/>}
-                            {block.type === 'video' && <Video size={14}/>}
-                            {block.type === 'audio' && <Music size={14}/>}
-                            {block.type} BLOCK
-                        </span>
-                        <button onClick={() => removeBlock(block.id)} className="text-zinc-600 hover:text-red-500 transition-colors">
-                            <Trash2 size={16} />
-                        </button>
+                      <span className="text-xs uppercase font-bold text-zinc-500 tracking-wider flex items-center gap-2">
+                        {block.type === 'text' && <Type size={14} />}
+                        {block.type === 'image' && <ImageIcon size={14} />}
+                        {block.type === 'video' && <Video size={14} />}
+                        {block.type === 'audio' && <Music size={14} />}
+                        {block.type} BLOCK
+                      </span>
+                      <button onClick={() => removeBlock(block.id)} className="text-zinc-600 hover:text-red-500 transition-colors">
+                        <Trash2 size={16} />
+                      </button>
                     </div>
 
                     {/* Inputs selon le type */}
@@ -346,32 +351,32 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
                     ) : (
                       <div className="flex gap-2 items-center">
                         <input
-                            type="text"
-                            value={block.content}
-                            onChange={(e) => updateBlockContent(block.id, e.target.value)}
-                            className="flex-1 bg-zinc-950 border border-zinc-800 rounded p-2 text-sm text-zinc-300 font-mono"
-                            placeholder={`URL du fichier ${block.type}...`}
+                          type="text"
+                          value={block.content}
+                          onChange={(e) => updateBlockContent(block.id, e.target.value)}
+                          className="flex-1 bg-zinc-950 border border-zinc-800 rounded p-2 text-sm text-zinc-300 font-mono"
+                          placeholder={`URL du fichier ${block.type}...`}
                         />
-                        <button 
-                            onClick={() => openMediaLibraryForBlock(block.id)}
-                            className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded text-zinc-300"
-                            title="Choisir depuis la médiathèque"
+                        <button
+                          onClick={() => openMediaLibraryForBlock(block.id)}
+                          className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded text-zinc-300"
+                          title="Choisir depuis la médiathèque"
                         >
-                            <FolderOpen size={18} />
+                          <FolderOpen size={18} />
                         </button>
                       </div>
                     )}
-                    
+
                     {/* Prévisualisations Editor */}
                     {block.content && block.type === 'image' && (
-                        <img src={block.content} alt="Preview" className="h-24 w-auto rounded object-cover border border-zinc-800 mt-2" />
+                      <img src={block.content} alt="Preview" className="h-24 w-auto rounded object-cover border border-zinc-800 mt-2" />
                     )}
                     {block.content && block.type === 'audio' && (
-                        <div className="mt-2 p-3 bg-zinc-950 rounded border border-zinc-800 flex items-center gap-3 text-sm text-zinc-400">
-                            <Music size={18} className="text-white" />
-                            <span>Fichier Audio lié</span>
-                            <audio src={block.content} controls className="h-8 w-48 ml-auto" />
-                        </div>
+                      <div className="mt-2 p-3 bg-zinc-950 rounded border border-zinc-800 flex items-center gap-3 text-sm text-zinc-400">
+                        <Music size={18} className="text-white" />
+                        <span>Fichier Audio lié</span>
+                        <audio src={block.content} controls className="h-8 w-48 ml-auto" />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -399,7 +404,7 @@ export function ProjectEditor({ project, onSave, onCancel }: ProjectEditorProps)
       </div>
 
       {/* Modal Médiathèque */}
-      <MediaLibraryModal 
+      <MediaLibraryModal
         isOpen={isMediaLibraryOpen}
         onClose={() => setIsMediaLibraryOpen(false)}
         onSelect={handleMediaSelect}

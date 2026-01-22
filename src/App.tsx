@@ -1,78 +1,145 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { Portfolio } from './pages/Portfolio';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
-
-type View = 'portfolio' | 'admin-login' | 'admin-dashboard';
+import { AuthGuard } from './components/AuthGuard';
+import { ProjectModal } from './components/ProjectModal';
+import { Project, Language } from './types';
+import { useProjects } from './hooks/useProjects';
 
 function App() {
-  const [currentView, setCurrentView] = useState<View>('portfolio');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // État d'authentification global
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Background location pour les modals
+  const background = location.state?.backgroundLocation;
 
   useEffect(() => {
     if (isSupabaseConfigured) {
       supabase.auth.getSession().then(({ data: { session } }) => {
         setIsAuthenticated(!!session);
-        if (session && currentView === 'admin-login') {
-          setCurrentView('admin-dashboard');
-        }
       });
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        (async () => {
-          setIsAuthenticated(!!session);
-          if (event === 'SIGNED_IN' && session) {
-            setCurrentView('admin-dashboard');
-          } else if (event === 'SIGNED_OUT') {
-            setCurrentView('portfolio');
-          }
-        })();
+        setIsAuthenticated(!!session);
+        if (event === 'SIGNED_OUT') {
+          navigate('/');
+        }
       });
 
       return () => subscription.unsubscribe();
     }
-  }, [currentView]);
-
-  const handleAdminClick = () => {
-    if (isAuthenticated) {
-      setCurrentView('admin-dashboard');
-    } else {
-      setCurrentView('admin-login');
-    }
-  };
+  }, [navigate]);
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
-    setCurrentView('admin-dashboard');
+    navigate('/admin');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (isSupabaseConfigured) {
+      await supabase.auth.signOut();
+    }
     setIsAuthenticated(false);
-    setCurrentView('portfolio');
+    navigate('/');
   };
 
-  const handleBackToPortfolio = () => {
-    setCurrentView('portfolio');
-  };
+  return (
+    <>
+      {/* Routes principales */}
+      <Routes location={background || location}>
+        <Route
+          path="/"
+          element={<Portfolio isAdmin={isAuthenticated} />}
+        />
 
-  if (currentView === 'admin-login') {
-    return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
-  }
+        <Route
+          path="/project/:id"
+          element={<PortfolioWithModal />}
+        />
 
-  if (currentView === 'admin-dashboard') {
-    return (
-      <AdminDashboard
-        onLogout={handleLogout}
-        onBackToPortfolio={handleBackToPortfolio}
-      />
-    );
+        <Route
+          path="/login"
+          element={<AdminLogin onLoginSuccess={handleLoginSuccess} />}
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <AuthGuard>
+              <AdminDashboard
+                onLogout={handleLogout}
+                onBackToPortfolio={() => navigate('/')}
+              />
+            </AuthGuard>
+          }
+        />
+      </Routes>
+
+      {/* Modal par-dessus si navigation depuis l'accueil */}
+      <AnimatePresence>
+        {background && (
+          <Routes>
+            <Route path="/project/:id" element={<ModalRoute />} />
+          </Routes>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// Composant helper pour afficher Portfolio + Modal quand on arrive directement sur /project/:id
+function PortfolioWithModal() {
+  const { id } = useParams<{ id: string }>();
+  const { projects } = useProjects();
+  const [language, setLanguage] = useState<Language>('en');
+  const navigate = useNavigate();
+
+  const selectedProject = useMemo(() => {
+    return projects.find((p) => p.id === id) || null;
+  }, [projects, id]);
+
+  return (
+    <>
+      <Portfolio isAdmin={false} />
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => navigate('/')}
+          language={language}
+        />
+      )}
+    </>
+  );
+}
+
+// Composant pour afficher la modal quand on navigue depuis l'accueil
+function ModalRoute() {
+  const { id } = useParams<{ id: string }>();
+  const { projects } = useProjects();
+  const [language, setLanguage] = useState<Language>('en');
+  const navigate = useNavigate();
+
+  const selectedProject = useMemo(() => {
+    return projects.find((p) => p.id === id) || null;
+  }, [projects, id]);
+
+  if (!selectedProject) {
+    navigate('/');
+    return null;
   }
 
   return (
-    <Portfolio
-      onAdminClick={handleAdminClick}
-      isAdmin={isAuthenticated}
+    <ProjectModal
+      project={selectedProject}
+      onClose={() => navigate(-1)}
+      language={language}
     />
   );
 }

@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Volume2, VolumeX, Calendar, Music } from 'lucide-react';
+import { X, Volume2, VolumeX } from 'lucide-react';
 import { Project } from '../types';
 import { useState } from 'react';
+import { SEO } from './SEO';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -14,8 +15,14 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
 
   if (!project) return null;
 
+
   return (
     <AnimatePresence>
+      <SEO
+        title={project.seo_title || project.title}
+        description={project.seo_description || project.brief_description || undefined}
+        image={project.thumbnail_url}
+      />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -29,7 +36,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
           className="relative w-full max-w-6xl max-h-[90vh] bg-zinc-950 rounded-xl overflow-hidden shadow-2xl flex flex-col"
         >
           {/* Bouton Fermer */}
@@ -42,7 +49,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
 
           {/* Zone de contenu Scrollable */}
           <div className="overflow-y-auto custom-scrollbar flex-1">
-            
+
             {/* 1. Header Hero (Vidéo ou Image) */}
             <div className="relative aspect-video w-full bg-black">
               {project.preview_video_url ? (
@@ -75,10 +82,10 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
 
             {/* 2. Contenu de l'article */}
             <div className="px-8 md:px-16 py-10 -mt-20 relative">
-              
+
               {/* Titre et Métadonnées */}
               <div className="mb-12 space-y-4">
-                <motion.h2 
+                <motion.h2
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   className="text-4xl md:text-6xl font-black text-white drop-shadow-lg"
@@ -103,7 +110,6 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                   {/* Date */}
                   {project.created_at && (
                     <div className="flex items-center gap-2 text-sm border-l border-zinc-700 pl-4">
-                      <Calendar size={14} />
                       <span>{new Date(project.created_at).toLocaleDateString()}</span>
                     </div>
                   )}
@@ -132,8 +138,8 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                   project.description.map((block: any) => {
                     if (block.type === 'text') {
                       return (
-                        <div 
-                          key={block.id} 
+                        <div
+                          key={block.id}
                           className="prose prose-invert prose-lg max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap break-words w-full"
                         >
                           {block.content}
@@ -145,7 +151,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                         <div key={block.id} className="my-8">
                           <img
                             src={block.content}
-                            alt="Project detail"
+                            alt={block.alt || project.title || 'Project detail'}
                             className="w-full rounded-xl shadow-lg border border-zinc-800"
                           />
                         </div>
@@ -158,6 +164,7 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                             src={block.content}
                             controls
                             className="w-full"
+                            aria-label={block.alt || project.title || 'Project video'}
                           />
                         </div>
                       );
@@ -165,17 +172,17 @@ export function ProjectModal({ project, onClose, language }: ProjectModalProps) 
                     if (block.type === 'audio') {
                       return (
                         <div key={block.id} className="my-8 bg-zinc-900 rounded-xl p-4 flex items-center gap-4 border border-zinc-800 shadow-lg">
-                           <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-900 rounded-md flex items-center justify-center shadow-inner shrink-0">
-                                <Music className="text-white w-8 h-8" />
-                           </div>
-                           <div className="flex-1 min-w-0">
-                                <div className="text-sm text-zinc-400 mb-1 font-medium tracking-wide uppercase">Piste Audio</div>
-                                <audio 
-                                    controls 
-                                    src={block.content} 
-                                    className="w-full h-8 block custom-audio-player"
-                                />
-                           </div>
+                          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-900 rounded-md flex items-center justify-center shadow-inner shrink-0">
+                            <span className="text-white text-2xl">♪</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm text-zinc-400 mb-1 font-medium tracking-wide uppercase">Piste Audio</div>
+                            <audio
+                              controls
+                              src={block.content}
+                              className="w-full h-8 block custom-audio-player"
+                            />
+                          </div>
                         </div>
                       );
                     }
