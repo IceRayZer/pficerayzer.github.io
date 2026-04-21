@@ -4,17 +4,32 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-// DEBUG : On vérifie dans la console si les clés sont là (sans les afficher en entier pour la sécurité)
+// Validation basique de l'URL
+const isValidUrl = (url: string) => {
+  try {
+    return url && new URL(url).protocol.startsWith('http');
+  } catch {
+    return false;
+  }
+};
+
+const isConfigured = isValidUrl(supabaseUrl) && !!supabaseAnonKey;
+
+// DEBUG : On vérifie dans la console si les clés sont là
 console.log("Supabase Config Check:", {
-  urlExpected: !!supabaseUrl,
-  keyExpected: !!supabaseAnonKey,
-  urlStart: supabaseUrl ? supabaseUrl.substring(0, 8) + '...' : 'MISSING',
+  urlValid: isValidUrl(supabaseUrl),
+  keyPresent: !!supabaseAnonKey,
+  status: isConfigured ? 'OK' : 'MISSING/INVALID'
 });
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("🚨 ERREUR CRITIQUE : Les clés Supabase sont manquantes dans le build !");
+if (!isConfigured) {
+  console.error("🚨 ERREUR CRITIQUE : Les clés Supabase sont invalides ou manquantes !");
 }
 
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// Pour éviter le crash (White Page), on utilise des valeurs bidons si la config est mauvaise.
+// Cela permettra à l'interface de s'afficher (avec des erreurs de requête, mais pas de crash global).
+export const supabase = isConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createClient('https://placeholder.supabase.co', 'placeholder');
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = isConfigured;

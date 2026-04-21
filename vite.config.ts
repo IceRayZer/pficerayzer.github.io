@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // Base path pour GitHub Pages - utilise '/' pour un repository username.github.io
-  base: './',
+  // Base path pour GitHub Pages
+  // Note: Comme le repo (pficerayzer.github.io) diffère du username (IceRayZer),
+  // le site est servi sous /pficerayzer.github.io/ et non à la racine.
+  base: '/pficerayzer.github.io/',
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
